@@ -17,9 +17,11 @@ import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 public final class Loader {
     private Context context;
     private Core core;
+    private final String DEFAULT_PATH;
 
     private Loader(Context context) {
         this.context = context;
+        DEFAULT_PATH = context.getCacheDir().getAbsolutePath();
     }
 
     public static Loader with(Context context) {
@@ -36,8 +38,12 @@ public final class Loader {
         return new Configurator(url);
     }
 
-    public void addInQueue() {
-        core.addInQueue();
+    public void addInQueue(String url) {
+        addInQueue(url, DEFAULT_PATH);
+    }
+
+    public void addInQueue(String url, String path) {
+        core.addInQueue(path, url);
     }
 
     public void cancelByName(String fileName) {
@@ -59,7 +65,7 @@ public final class Loader {
 
     public final class Configurator {
         private final String url;
-        private String path = Repository.DEFAULT.getPath();
+        private String path = context.getCacheDir().getAbsolutePath();
         private ReceivedFile receivedFile;
         private ReceivedFileSource receivedFileSource;
         private OnStart onStart;
@@ -69,20 +75,22 @@ public final class Loader {
         private OnProgress onProgress;
         private OnErrorNext onErrorNext;
         private Notification notification;
-        private boolean isEnableDefaultNotification;
+        private boolean isHideDefaultNotification;
+        private boolean isViewNotificationOnFinish;
         private boolean isImmortal;
         private boolean isParallel;
+        private boolean isSkipCache;
         private boolean isSkipIfFileExist;
         private boolean isBreakNextIfError;
         private int redownloadAttemptCount;
         private long delayBetweenLoad;
 
         private Configurator(String url) {
-            this.url = url;
+            this.url = url.trim();
         }
 
         public Configurator to(String path) {
-            this.path = path;
+            this.path = path.trim();
             return this;
         }
 
@@ -91,8 +99,8 @@ public final class Loader {
             return this;
         }
 
-        public Configurator to(Repository repository) {
-            this.path = repository.getPath();
+        public Configurator skipCache() {
+            this.isSkipCache = true;
             return this;
         }
 
@@ -106,8 +114,13 @@ public final class Loader {
             return this;
         }
 
-        public Configurator enableDefaultNotification() {
-            isEnableDefaultNotification = true;
+        public Configurator hideDefaultNotification() {
+            isHideDefaultNotification = true;
+            return this;
+        }
+
+        public Configurator viewNotificationOnFinish() {
+            this.isViewNotificationOnFinish = true;
             return this;
         }
 
@@ -220,12 +233,20 @@ public final class Loader {
             return notification;
         }
 
-        public boolean isEnableDefaultNotification() {
-            return isEnableDefaultNotification;
+        public boolean isHideDefaultNotification() {
+            return isHideDefaultNotification;
+        }
+
+        public boolean isViewNotificationOnFinish() {
+            return isViewNotificationOnFinish;
         }
 
         public boolean isImmortal() {
             return isImmortal;
+        }
+
+        public boolean isSkipCache() {
+            return isSkipCache;
         }
 
         public boolean isParallel() {

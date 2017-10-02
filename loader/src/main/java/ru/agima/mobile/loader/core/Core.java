@@ -2,6 +2,7 @@ package ru.agima.mobile.loader.core;
 
 import android.app.Notification;
 import android.content.Context;
+import android.content.Intent;
 
 import ru.agima.mobile.loader.callbacks.lifecycle.OnCompleted;
 import ru.agima.mobile.loader.callbacks.lifecycle.OnCompletedNext;
@@ -12,8 +13,12 @@ import ru.agima.mobile.loader.callbacks.lifecycle.OnStartNext;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 import ru.agima.mobile.loader.core.Loader.Configurator;
+import ru.agima.mobile.loader.service.LoaderService;
+import ru.agima.mobile.loader.utils.BundleConst;
+import ru.agima.mobile.loader.utils.Validator;
 
-public final class Core {
+final class Core {
+    private Context context;
     private String url;
     private String path;
     private ReceivedFile receivedFile;
@@ -25,58 +30,102 @@ public final class Core {
     private OnProgress onProgress;
     private OnErrorNext onErrorNext;
     private Notification notification;
-    private boolean isEnableDefaultNotification;
+    private boolean isHideDefaultNotification;
+    private boolean isViewNotificationOnFinish;
     private boolean isImmortal;
     private boolean isParallel;
+    private boolean isSkipCache;
     private boolean isSkipIfFileExist;
     private boolean isBreakNextIfError;
     private int redownloadAttemptCount;
     private long delayBetweenLoad;
 
     public void build(Configurator configurator, Context context) {
-        cancelAll();
-        url = configurator.getUrl();
-        path = configurator.getPath();
-        receivedFile = configurator.getReceivedFile();
-        receivedFileSource = configurator.getReceivedFileSource();
-        onStart = configurator.getOnStart();
-        onStartNext = configurator.getOnStartNext();
-        onCompletedNext = configurator.getOnCompletedNext();
-        onCompleted = configurator.getOnCompleted();
-        onProgress = configurator.getOnProgress();
-        onErrorNext = configurator.getOnErrorNext();
-        notification = configurator.getNotification();
-        isEnableDefaultNotification = configurator.isEnableDefaultNotification();
-        isImmortal = configurator.isImmortal();
+        this.context = context;
+        destroyService();
+        url = configurator.getUrl();                                            // OK
+        path = configurator.getPath();                                          // OK
+        receivedFile = configurator.getReceivedFile();                          // OK
+        receivedFileSource = configurator.getReceivedFileSource();              // OK
+        onStart = configurator.getOnStart();                                    // OK
+        onStartNext = configurator.getOnStartNext();                            // OK
+        onCompletedNext = configurator.getOnCompletedNext();                    // OK
+        onCompleted = configurator.getOnCompleted();                            // OK
+        onProgress = configurator.getOnProgress();                              // OK
+        onErrorNext = configurator.getOnErrorNext();                            // OK
+        notification = configurator.getNotification();                          // OK
+        isHideDefaultNotification = configurator.isHideDefaultNotification();   // НЕ РЕКОМЕНДОВАНО OK
+        isViewNotificationOnFinish = configurator.isHideDefaultNotification();   // OK
+        isImmortal = configurator.isImmortal();                                 // OK
         isParallel = configurator.isParallel();
+        isSkipCache = configurator.isSkipCache();
         isSkipIfFileExist = configurator.isSkipIfFileExist();
         isBreakNextIfError = configurator.isBreakNextIfError();
         redownloadAttemptCount = configurator.getRedownloadAttemptCount();
         delayBetweenLoad = configurator.getDelayBetweenLoad();
-        load(context);
+        load();
     }
 
-    private void load(Context context) {
-
+    private void load() {
+        if (isSkipCache) {
+            path = null;
+        }
+        validate();
+        final Intent intent = new Intent();
+        intent.setClass(context, LoaderService.class);
+        intent.putExtra(BundleConst.URL, url);
+        intent.putExtra(BundleConst.PATH, path);
+        intent.putExtra(BundleConst.IMMORTAL, isImmortal);
+        intent.putExtra(BundleConst.DEFAULT_NOTIFICATION, isHideDefaultNotification);
+        intent.putExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, isViewNotificationOnFinish);
+        intent.putExtra(BundleConst.NOTIFICATION, notification);
+        intent.putExtra(BundleConst.RECEIVED_FILE, receivedFile);
+        intent.putExtra(BundleConst.RECEIVED_FILE_SOURCE, receivedFileSource);
+        intent.putExtra(BundleConst.ON_START, onStart);
+        intent.putExtra(BundleConst.ON_START_NEXT, onStartNext);
+        intent.putExtra(BundleConst.ON_COMPLETED_NEXT, onCompletedNext);
+        intent.putExtra(BundleConst.ON_COMPLETED, onCompleted);
+        intent.putExtra(BundleConst.ON_PROGRESS, onProgress);
+        intent.putExtra(BundleConst.ON_ERROR_NEXT, onErrorNext);
+        context.startService(intent);
     }
 
-    public void addInQueue() {
-
+    private void validate() {
+        if (path != null) {
+            Validator.getNonEmptyValue(path, "Argument 'path' should not be empty");
+        }
+        Validator.getNonEmptyValue(url, "Argument 'url' should not be empty");
+        Validator.getNonNull(context, "Context should not be null");
     }
 
-    public void cancelByName(String fileName) {
-
+    void addInQueue(String path, String url) {
+        this.url = url;
+        this.path = path;
+        load();
     }
 
-    public void cancelByUrl(String url) {
-
+    void cancelByName(String fileName) {
+      /*  Context.startService()
+        Context.stopService()
+        Service.stopSelf()
+        Service.stopSelfResult()*/
     }
 
-    public void cancelAll() {
-
+    void cancelByUrl(String url) {
+        // remove first and last space
     }
 
-    public void onDestroyCallback() {
+    void cancelAll() {
+        destroyService();
+        context = null;
+    }
+
+    private void destroyService() {
+        context.stopService(new Intent(context, LoaderService.class));
+        onDestroyCallback();
+    }
+
+    void onDestroyCallback() {
         receivedFile = null;
         receivedFileSource = null;
         onStart = null;

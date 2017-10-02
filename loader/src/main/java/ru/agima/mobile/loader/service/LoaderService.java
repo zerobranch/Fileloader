@@ -1,5 +1,6 @@
 package ru.agima.mobile.loader.service;
 
+import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
@@ -7,74 +8,57 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import ru.agima.mobile.loader.core.LoadManager;
+import ru.agima.mobile.loader.utils.BundleConst;
+
 public class LoaderService extends Service {
-    private volatile Looper mServiceLooper;
-//    private volatile ServiceHandler mServiceHandler;
+    private volatile Looper serviceLooper;
     private volatile Handler handler;
-    private String mName;
-    private boolean mRedelivery;
-
-//    private final class ServiceHandler extends Handler {
-//        public ServiceHandler(Looper looper) {
-//            super(looper);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            onHandleIntent((Intent)msg.obj);
-//            stopSelf(msg.arg1);
-//        }
-//    }
-
-    Handler.Callback callback = new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            onHandleIntent((Intent)msg.obj);
-            stopSelf(msg.arg1);
-            return true;
-        }
-    };
-
-    public LoaderService(String name) {
-        mName = name;
-    }
-
-    public void setIntentRedelivery(boolean enabled) {
-        mRedelivery = enabled;
-    }
+    public static final int DEFAULT_NOTIFICATION_ID = 43534;
+    private boolean redelivery;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        HandlerThread thread = new HandlerThread("IntentService[" + mName + "]");
+        final HandlerThread thread = new HandlerThread(LoaderService.class.getName());
         thread.start();
-
-        mServiceLooper = thread.getLooper();
-//        mServiceHandler = new ServiceHandler(mServiceLooper);
-
-        handler = new Handler(mServiceLooper, callback);
+        serviceLooper = thread.getLooper();
+        handler = new Handler(serviceLooper, handlerCallback);
     }
 
     @Override
-    public void onStart(@Nullable Intent intent, int startId) {
-        Message msg = handler.obtainMessage();
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        final Message msg = handler.obtainMessage();
         msg.arg1 = startId;
         msg.obj = intent;
         handler.sendMessage(msg);
+        return redelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;
     }
 
-    @Override
-    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        onStart(intent, startId);
-        return mRedelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;
+    @SuppressWarnings("deprecation")
+    private void setImmortal(Intent intent) {
+        final boolean isHideNotification = intent.getBooleanExtra(BundleConst.DEFAULT_NOTIFICATION, false);
+        final boolean isImmortal = intent.getBooleanExtra(BundleConst.IMMORTAL, false);
+        final Notification notification = intent.getParcelableExtra(BundleConst.NOTIFICATION);
+        if (isImmortal) {
+            if (notification != null) {
+                startForeground(DEFAULT_NOTIFICATION_ID, notification);
+            } else {
+                startForeground(DEFAULT_NOTIFICATION_ID, new Notification.Builder(this).build());
+                if (isHideNotification) {
+                    startService(new Intent(this, HideNotificationService.class));
+                }
+            }
+        }
     }
 
     @Override
     public void onDestroy() {
-        mServiceLooper.quit();
+        serviceLooper.quit();
     }
 
     @Override
@@ -84,7 +68,27 @@ public class LoaderService extends Service {
     }
 
     @WorkerThread
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleIntent(Intent intent) {
+        final String url = intent.getStringExtra(BundleConst.URL);
+        final String path = intent.getStringExtra(BundleConst.PATH);
+        final ResultReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
 
+        if (receiver != null) {
+            LoadManager.loadFile(path, url, receiver);
+        } else {
+            LoadManager.loadFile(path, url);
+        }
     }
+
+    private final Handler.Callback handlerCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            final Intent intent = (Intent) msg.obj;
+            setImmortal(intent);
+            onHandleIntent(intent);
+            stopForeground(intent.getBooleanExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, false));
+            stopSelf(msg.arg1);
+            return true;
+        }
+    };
 }

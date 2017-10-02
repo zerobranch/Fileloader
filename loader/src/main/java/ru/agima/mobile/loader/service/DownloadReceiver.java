@@ -22,7 +22,7 @@ public class DownloadReceiver extends ResultReceiver {
     @Override
     protected void onReceiveResult(int resultCode, Bundle resultData) {
         super.onReceiveResult(resultCode, resultData);
-        if (resultCode == NewIntentService.UPDATE_PROGRESS) {
+        if (resultCode == LoaderService.class.getModifiers()) {
             int progress = resultData.getInt("progress");
             if (mReceiver != null) {
                 mReceiver.onReceiveResult(progress);

@@ -1,5 +1,7 @@
 package ru.agima.mobile.loader.callbacks.lifecycle;
 
-public interface OnCompleted {
+import java.io.Serializable;
+
+public interface OnCompleted extends Serializable {
     void apply();
 }

@@ -1,5 +1,7 @@
 package ru.agima.mobile.loader.callbacks.lifecycle;
 
-public interface OnErrorNext {
+import java.io.Serializable;
+
+public interface OnErrorNext extends Serializable {
     void apply(String fileName);
 }
