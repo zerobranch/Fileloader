@@ -1,9 +1,12 @@
 package ru.agima.mobile.loader.core;
 
+import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
+import android.webkit.URLUtil;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,37 +16,48 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import ru.agima.mobile.loader.core.DownloadReceiver.ReceiveCode;
+import ru.agima.mobile.loader.utils.BundleConst;
+
 public class LoadManager {
+    private ResultReceiver receiver;
+    private File currentFile;
+    private String fileName;
 
-    public static void loadFile(String path, String url) {
-        loadFile(path, url, null);
-    }
+    public synchronized void loadFile(String path, String url, ResultReceiver resultReceiver) {
+        this.receiver = resultReceiver;
+        sendTrail(ReceiveCode.ON_START.getCode(), null);
+        fileName = URLUtil.guessFileName(url, null, URLConnection.guessContentTypeFromName(url));
 
-    public static synchronized void loadFile(String path, String url, ResultReceiver resultReceiver) {
-        if (path == null || path.isEmpty()) {
-            downloading(url, null, resultReceiver);
-        } else {
-            downloading(url, getOutputStream(path), resultReceiver);
-        }
-    }
-
-    private static OutputStream getOutputStream(String path) {
-        File currentFile;
-        currentFile = new File(path, "myFile_end.pdf");
         try {
-            if (!currentFile.createNewFile() && !currentFile.exists()) {
-                throw new IOException("Could not create " + currentFile.getName() + " file");
+            if (path == null || path.isEmpty()) {
+                downloading(url, null);
+            } else {
+                downloading(url, getOutputStream(path, fileName));
             }
-            return new FileOutputStream(currentFile);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable throwable) {
+            final Bundle bundle = new Bundle();
+            bundle.putSerializable(BundleConst.THROWABLE, throwable);
+            bundle.putString(BundleConst.FILE_NAME, fileName);
+            sendTrail(ReceiveCode.ON_ERROR.getCode(), bundle);
+            return;
         }
-        return null;
+        sendTrail(ReceiveCode.ON_COMPLETED.getCode(), null);
     }
 
-    private static void downloading(String url, @Nullable OutputStream output, ResultReceiver resultReceiver) {
-        InputStream input = null;
+    private OutputStream getOutputStream(String path, String fileName) throws IOException {
+        currentFile = new File(path, fileName);
+        if (!currentFile.createNewFile() && !currentFile.exists()) {
+            throw new IOException("Could not create " + currentFile.getName() + " file");
+        }
+        return new FileOutputStream(currentFile);
+    }
 
+    private void downloading(String url, @Nullable OutputStream output) throws IOException {
+        InputStream input = null;
+        if (output == null) {
+            output = new ByteArrayOutputStream();
+        }
         try {
             final URLConnection connection = new URL(url).openConnection();
             connection.connect();
@@ -52,31 +66,47 @@ public class LoadManager {
             final byte data[] = new byte[1024];
             long total = 0;
             int count;
+            int progress;
+            int lastProgress = 0;
+
             while ((count = input.read(data)) != -1) {
                 total += count;
-//                Bundle resultData = new Bundle();
-//                resultData.putInt("progress" ,(int) (total * 100 / fileLength));
-//                receiver.send(UPDATE_PROGRESS, resultData);
-                System.out.println("--- " + (int) (total * 100 / fileLength));
-                Thread.sleep(10);
-
-                if (output != null) output.write(data, 0, count);
+                progress = (int) (total * 100 / fileLength);
+                if (progress - lastProgress != 0 && progress != 100) {
+                    final Bundle resultData = new Bundle();
+                    lastProgress = progress;
+                    resultData.putInt(BundleConst.PROGRESS, progress);
+                    sendTrail(ReceiveCode.ON_PROGRESS.getCode(), resultData);
+                }
+                output.write(data, 0, count);
             }
-
-            if (output != null) output.flush();
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
+            output.flush();
         } finally {
             closeStream(input);
             closeStream(output);
         }
 
-//        Bundle resultData = new Bundle();
-//        resultData.putInt("progress" ,100);
-//        receiver.send(UPDATE_PROGRESS, resultData);
+        final Bundle resultData = new Bundle();
+        resultData.putInt(BundleConst.PROGRESS, 100);
+        sendTrail(ReceiveCode.ON_PROGRESS.getCode(), resultData);
+
+        if (output instanceof ByteArrayOutputStream) {
+            resultData.putByteArray(BundleConst.BYTES, ((ByteArrayOutputStream) output).toByteArray());
+            resultData.putString(BundleConst.FILE_NAME, fileName);
+            sendTrail(ReceiveCode.RECEIVED_FILE_SOURCE.getCode(), resultData);
+        } else {
+            resultData.putSerializable(BundleConst.FILE, currentFile);
+            sendTrail(ReceiveCode.RECEIVED_FILE.getCode(), resultData);
+        }
     }
 
-    private static void closeStream(Closeable closeable) {
+    private void sendTrail(int resultCode, Bundle resultData) {
+        if (receiver != null) {
+            receiver.send(resultCode, resultData);
+        }
+    }
+
+    private void closeStream(Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();

@@ -6,11 +6,9 @@ import android.content.Context;
 import java.io.File;
 
 import ru.agima.mobile.loader.callbacks.lifecycle.OnCompleted;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnCompletedNext;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnErrorNext;
+import ru.agima.mobile.loader.callbacks.lifecycle.OnError;
 import ru.agima.mobile.loader.callbacks.lifecycle.OnProgress;
 import ru.agima.mobile.loader.callbacks.lifecycle.OnStart;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnStartNext;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 
@@ -18,6 +16,7 @@ public final class Loader {
     private Context context;
     private Core core;
     private final String DEFAULT_PATH;
+    private Configurator configurator;
 
     private Loader(Context context) {
         this.context = context;
@@ -35,7 +34,8 @@ public final class Loader {
     }
 
     public Configurator fromUrl(String url) {
-        return new Configurator(url);
+        configurator = new Configurator(url);
+        return configurator;
     }
 
     public void addInQueue(String url) {
@@ -59,22 +59,83 @@ public final class Loader {
         context = null;
     }
 
-    public void onDestroyCallback() {
-        core.onDestroyCallback();
+    public void unsubscribe() {
+        core.unsubscribe();
+    }
+
+    public final class ReceivedConfig {
+        private ReceivedFile receivedFile;
+        private ReceivedFileSource receivedFileSource;
+        private OnStart onStart;
+        private OnCompleted onCompleted;
+        private OnProgress onProgress;
+        private OnError onError;
+
+        public ReceivedConfig receivedFile(ReceivedFile receivedFile) {
+            this.receivedFile = receivedFile;
+            return this;
+        }
+
+        public ReceivedConfig receivedFileSource(ReceivedFileSource receivedFileSource) {
+            this.receivedFileSource = receivedFileSource;
+            return this;
+        }
+
+        public ReceivedConfig onStart(OnStart onStart) {
+            this.onStart = onStart;
+            return this;
+        }
+
+        public ReceivedConfig onCompleted(OnCompleted onCompleted) {
+            this.onCompleted = onCompleted;
+            return this;
+        }
+
+        public ReceivedConfig onProgress(OnProgress onProgress) {
+            this.onProgress = onProgress;
+            return this;
+        }
+
+        public ReceivedConfig onError(OnError onError) {
+            this.onError = onError;
+            return this;
+        }
+
+        public Loader load() {
+            return configurator.build(this);
+        }
+
+        ReceivedFile getReceivedFile() {
+            return receivedFile;
+        }
+
+        ReceivedFileSource getReceivedFileSource() {
+            return receivedFileSource;
+        }
+
+        OnStart getOnStart() {
+            return onStart;
+        }
+
+        OnCompleted getOnCompleted() {
+            return onCompleted;
+        }
+
+        OnProgress getOnProgress() {
+            return onProgress;
+        }
+
+        OnError getOnError() {
+            return onError;
+        }
     }
 
     public final class Configurator {
         private final String url;
         private String path = context.getCacheDir().getAbsolutePath();
-        private ReceivedFile receivedFile;
-        private ReceivedFileSource receivedFileSource;
-        private OnStart onStart;
-        private OnStartNext onStartNext;
-        private OnCompletedNext onCompletedNext;
-        private OnCompleted onCompleted;
-        private OnProgress onProgress;
-        private OnErrorNext onErrorNext;
         private Notification notification;
+        private DownloadReceiver downloadReceiver;
+        private ReceivedConfig receivedConfig;
         private boolean isHideDefaultNotification;
         private boolean isViewNotificationOnFinish;
         private boolean isImmortal;
@@ -149,127 +210,73 @@ public final class Loader {
             return this;
         }
 
-        public Configurator receivedFile(ReceivedFile receivedFile) {
-            this.receivedFile = receivedFile;
-            return this;
+        public ReceivedConfig downloadReceiver(DownloadReceiver downloadReceiver) {
+            this.downloadReceiver = downloadReceiver;
+            receivedConfig = new ReceivedConfig();
+            return receivedConfig;
         }
 
-        public Configurator receivedFileSource(ReceivedFileSource receivedFileSource) {
-            this.receivedFileSource = receivedFileSource;
-            return this;
+        DownloadReceiver getDownloadReceiver() {
+            return downloadReceiver;
         }
 
-        public Configurator onStart(OnStart onStart) {
-            this.onStart = onStart;
-            return this;
+        ReceivedConfig getReceivedConfig() {
+            return receivedConfig;
         }
 
-        public Configurator onStartNext(OnStartNext onStartNext) {
-            this.onStartNext = onStartNext;
-            return this;
-        }
-
-        public Configurator onCompletedNext(OnCompletedNext onCompletedNext) {
-            this.onCompletedNext = onCompletedNext;
-            return this;
-        }
-
-        public Configurator onCompleted(OnCompleted onCompleted) {
-            this.onCompleted = onCompleted;
-            return this;
-        }
-
-        public Configurator receivedFileSource(OnProgress onProgress) {
-            this.onProgress = onProgress;
-            return this;
-        }
-
-        public Configurator receivedFileSource(OnErrorNext onErrorNext) {
-            this.onErrorNext = onErrorNext;
-            return this;
-        }
-
-        public String getUrl() {
+        String getUrl() {
             return url;
         }
 
-        public String getPath() {
+        String getPath() {
             return path;
         }
 
-        public ReceivedFile getReceivedFile() {
-            return receivedFile;
-        }
-
-        public ReceivedFileSource getReceivedFileSource() {
-            return receivedFileSource;
-        }
-
-        public OnStart getOnStart() {
-            return onStart;
-        }
-
-        public OnStartNext getOnStartNext() {
-            return onStartNext;
-        }
-
-        public OnCompletedNext getOnCompletedNext() {
-            return onCompletedNext;
-        }
-
-        public OnCompleted getOnCompleted() {
-            return onCompleted;
-        }
-
-        public OnProgress getOnProgress() {
-            return onProgress;
-        }
-
-        public OnErrorNext getOnErrorNext() {
-            return onErrorNext;
-        }
-
-        public Notification getNotification() {
+        Notification getNotification() {
             return notification;
         }
 
-        public boolean isHideDefaultNotification() {
+        boolean isHideDefaultNotification() {
             return isHideDefaultNotification;
         }
 
-        public boolean isViewNotificationOnFinish() {
+        boolean isViewNotificationOnFinish() {
             return isViewNotificationOnFinish;
         }
 
-        public boolean isImmortal() {
+        boolean isImmortal() {
             return isImmortal;
         }
 
-        public boolean isSkipCache() {
+        boolean isSkipCache() {
             return isSkipCache;
         }
 
-        public boolean isParallel() {
+        boolean isParallel() {
             return isParallel;
         }
 
-        public boolean isBreakNextIfError() {
+        boolean isBreakNextIfError() {
             return isBreakNextIfError;
         }
 
-        public int getRedownloadAttemptCount() {
+        int getRedownloadAttemptCount() {
             return redownloadAttemptCount;
         }
 
-        public long getDelayBetweenLoad() {
+        long getDelayBetweenLoad() {
             return delayBetweenLoad;
         }
 
-        public boolean isSkipIfFileExist() {
+        boolean isSkipIfFileExist() {
             return isSkipIfFileExist;
         }
 
         public Loader load() {
+            return Loader.this.build(this);
+        }
+
+        public Loader build(ReceivedConfig receivedConfig) {
             return Loader.this.build(this);
         }
     }

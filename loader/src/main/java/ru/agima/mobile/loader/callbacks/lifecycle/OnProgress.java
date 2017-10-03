@@ -1,7 +1,5 @@
 package ru.agima.mobile.loader.callbacks.lifecycle;
 
-import java.io.Serializable;
-
-public interface OnProgress extends Serializable {
+public interface OnProgress {
     void apply(int progress);
 }

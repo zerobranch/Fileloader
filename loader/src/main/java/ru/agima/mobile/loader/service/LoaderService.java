@@ -72,12 +72,7 @@ public class LoaderService extends Service {
         final String url = intent.getStringExtra(BundleConst.URL);
         final String path = intent.getStringExtra(BundleConst.PATH);
         final ResultReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
-
-        if (receiver != null) {
-            LoadManager.loadFile(path, url, receiver);
-        } else {
-            LoadManager.loadFile(path, url);
-        }
+        new LoadManager().loadFile(path, url, receiver);
     }
 
     private final Handler.Callback handlerCallback = new Handler.Callback() {
