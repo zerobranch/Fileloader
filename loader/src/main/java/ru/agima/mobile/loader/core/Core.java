@@ -7,6 +7,7 @@ import android.content.Intent;
 import ru.agima.mobile.loader.core.Loader.Configurator;
 import ru.agima.mobile.loader.service.LoaderService;
 import ru.agima.mobile.loader.utils.BundleConst;
+import ru.agima.mobile.loader.utils.Logger;
 import ru.agima.mobile.loader.utils.Validator;
 
 final class Core {
@@ -18,6 +19,7 @@ final class Core {
     private Notification notification;
     private boolean isHideDefaultNotification;
     private boolean isViewNotificationOnFinish;
+    private boolean isEnableLogging;
     private boolean isImmortal;
     private boolean isParallel;
     private boolean isSkipCache;
@@ -34,7 +36,8 @@ final class Core {
         receiver = configurator.getDownloadReceiver();                          // OK
         receivedConfig = configurator.getReceivedConfig();                      // OK
         isHideDefaultNotification = configurator.isHideDefaultNotification();   // НЕ РЕКОМЕНДОВАНО OK
-        isViewNotificationOnFinish = configurator.isViewNotificationOnFinish();  // OK
+        isViewNotificationOnFinish = configurator.isViewNotificationOnFinish(); // OK
+        isEnableLogging = configurator.isEnableLogging();                       // OK
         isImmortal = configurator.isImmortal();                                 // OK
         isParallel = configurator.isParallel();
         isSkipCache = configurator.isSkipCache();                               // OK
@@ -46,6 +49,15 @@ final class Core {
     }
 
     private void load() {
+        configure();
+        validate();
+        context.startService(getPreparedIntent());
+    }
+
+    private void configure() {
+        if (isEnableLogging) {
+            Logger.enableLogging();
+        }
         if (receiver != null) {
             setReceivers();
             if (receiver.getReceivedFileSource() != null) {
@@ -55,18 +67,18 @@ final class Core {
         if (isSkipCache) {
             path = null;
         }
+    }
 
-        validate();
-        final Intent intent = new Intent();
-        intent.setClass(context, LoaderService.class);
-        intent.putExtra(BundleConst.URL, url);
-        intent.putExtra(BundleConst.PATH, path);
-        intent.putExtra(BundleConst.IMMORTAL, isImmortal);
-        intent.putExtra(BundleConst.DEFAULT_NOTIFICATION, isHideDefaultNotification);
-        intent.putExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, isViewNotificationOnFinish);
-        intent.putExtra(BundleConst.NOTIFICATION, notification);
-        intent.putExtra(BundleConst.RECEIVER, receiver);
-        context.startService(intent);
+    private Intent getPreparedIntent() {
+        return new Intent()
+                .setClass(context, LoaderService.class)
+                .putExtra(BundleConst.URL, url)
+                .putExtra(BundleConst.PATH, path)
+                .putExtra(BundleConst.IMMORTAL, isImmortal)
+                .putExtra(BundleConst.DEFAULT_NOTIFICATION, isHideDefaultNotification)
+                .putExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, isViewNotificationOnFinish)
+                .putExtra(BundleConst.NOTIFICATION, notification)
+                .putExtra(BundleConst.RECEIVER, receiver);
     }
 
     private void setReceivers() {

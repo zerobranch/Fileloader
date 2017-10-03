@@ -18,6 +18,7 @@ import java.net.URLConnection;
 
 import ru.agima.mobile.loader.core.DownloadReceiver.ReceiveCode;
 import ru.agima.mobile.loader.utils.BundleConst;
+import ru.agima.mobile.loader.utils.Logger;
 
 public class LoadManager {
     private ResultReceiver receiver;
@@ -28,6 +29,7 @@ public class LoadManager {
         this.receiver = resultReceiver;
         sendTrail(ReceiveCode.ON_START.getCode(), null);
         fileName = URLUtil.guessFileName(url, null, URLConnection.guessContentTypeFromName(url));
+        Logger.info("Start downloading", fileName, "file");
 
         try {
             if (path == null || path.isEmpty()) {
@@ -36,12 +38,14 @@ public class LoadManager {
                 downloading(url, getOutputStream(path, fileName));
             }
         } catch (Throwable throwable) {
+            Logger.debug(throwable.getMessage(), throwable);
             final Bundle bundle = new Bundle();
             bundle.putSerializable(BundleConst.THROWABLE, throwable);
             bundle.putString(BundleConst.FILE_NAME, fileName);
             sendTrail(ReceiveCode.ON_ERROR.getCode(), bundle);
             return;
         }
+        Logger.info("Download of", fileName, "file completed");
         sendTrail(ReceiveCode.ON_COMPLETED.getCode(), null);
     }
 
@@ -68,7 +72,6 @@ public class LoadManager {
             int count;
             int progress;
             int lastProgress = 0;
-
             while ((count = input.read(data)) != -1) {
                 total += count;
                 progress = (int) (total * 100 / fileLength);
@@ -78,6 +81,7 @@ public class LoadManager {
                     resultData.putInt(BundleConst.PROGRESS, progress);
                     sendTrail(ReceiveCode.ON_PROGRESS.getCode(), resultData);
                 }
+                Logger.info("Uploaded", total, "from", fileLength, "== progress", progress, "%");
                 output.write(data, 0, count);
             }
             output.flush();
@@ -91,10 +95,12 @@ public class LoadManager {
         sendTrail(ReceiveCode.ON_PROGRESS.getCode(), resultData);
 
         if (output instanceof ByteArrayOutputStream) {
+            Logger.info("Sources of", fileName, "are redirected to bytes");
             resultData.putByteArray(BundleConst.BYTES, ((ByteArrayOutputStream) output).toByteArray());
             resultData.putString(BundleConst.FILE_NAME, fileName);
             sendTrail(ReceiveCode.RECEIVED_FILE_SOURCE.getCode(), resultData);
         } else {
+            Logger.info("Sources of", fileName, "are redirected to file");
             resultData.putSerializable(BundleConst.FILE, currentFile);
             sendTrail(ReceiveCode.RECEIVED_FILE.getCode(), resultData);
         }

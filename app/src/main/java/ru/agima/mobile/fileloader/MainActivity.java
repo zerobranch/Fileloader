@@ -8,9 +8,6 @@ import com.github.barteksc.pdfviewer.PDFView;
 
 import java.io.File;
 
-import ru.agima.mobile.loader.callbacks.lifecycle.OnCompleted;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnError;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnStart;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 import ru.agima.mobile.loader.core.DownloadReceiver;
@@ -28,12 +25,12 @@ public class MainActivity extends AppCompatActivity {
 //        textView = (TextView) findViewById(R.id.hello);
         pdfView = (PDFView) findViewById(R.id.pdfView);
 
-
         receiver = new DownloadReceiver(new Handler());
 
         Loader loader = Loader.with(this).fromUrl("https://kniga.biz.ua/pdf/4434-mechtat-ne_vredno-1.pdf")
+                .enableLogging()
                 .downloadReceiver(receiver)
-                .onStart(new OnStart() {
+                /*.onStart(new OnStart() {
                     @Override
                     public void apply() {
                         System.out.println("====> OnStart");
@@ -45,30 +42,32 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("====> OnCompleted");
 //
                     }
-                }).receivedFile(new ReceivedFile() {
+                })*/.receivedFile(new ReceivedFile() {
                     @Override
                     public void set(File file) {
                         System.out.println("=====> file path " + file.getAbsolutePath());
                     }
                 })
-                .onError(new OnError() {
+                /*.onError(new OnError() {
                     @Override
                     public void apply(String fileName, Throwable throwable) {
                         throwable.printStackTrace();
                         System.out.println("====>>>> ERROR" + throwable.toString());
                     }
-                })
+                })*/
                 .receivedFileSource(new ReceivedFileSource() {
                     @Override
                     public void set(byte[] source, String fileName) {
-                        System.out.println("====> file name " + fileName);
+//                        System.out.println("====> file name " + fileName);
                         pdfView.fromBytes(source).defaultPage(0).load();
                     }
                 })
                 .load();
-
-        loader.addInQueue("https://zimslifeintcs.files.wordpress.com/2011/12/head-first-java-2nd-edition.pdf");
+//
+//        loader.addInQueue("https://zimslifeintcs.files.wordpress.com/2011/12/head-first-java-2nd-edition.pdf");
     }
+
+
 }
 
 

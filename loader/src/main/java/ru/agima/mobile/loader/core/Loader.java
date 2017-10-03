@@ -137,6 +137,7 @@ public final class Loader {
         private DownloadReceiver downloadReceiver;
         private ReceivedConfig receivedConfig;
         private boolean isHideDefaultNotification;
+        private boolean isEnableLogging;
         private boolean isViewNotificationOnFinish;
         private boolean isImmortal;
         private boolean isParallel;
@@ -162,6 +163,11 @@ public final class Loader {
 
         public Configurator skipCache() {
             this.isSkipCache = true;
+            return this;
+        }
+
+        public Configurator enableLogging() {
+            this.isEnableLogging = true;
             return this;
         }
 
@@ -254,6 +260,10 @@ public final class Loader {
 
         boolean isParallel() {
             return isParallel;
+        }
+
+        boolean isEnableLogging() {
+            return isEnableLogging;
         }
 
         boolean isBreakNextIfError() {
