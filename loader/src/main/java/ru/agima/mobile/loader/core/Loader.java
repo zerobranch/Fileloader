@@ -175,6 +175,7 @@ public final class Loader {
             return this;
         }
 
+        @Deprecated
         public Configurator hideDefaultNotification() {
             isHideDefaultNotification = true;
             return this;
