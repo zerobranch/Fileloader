@@ -26,25 +26,23 @@ final class Core {
     private boolean isSkipIfFileExist;
     private boolean isBreakNextIfError;
     private int redownloadAttemptCount;
-    private long delayBetweenLoad;
 
     public void build(Configurator configurator, Context context) {
         this.context = context;
-        url = configurator.getUrl();                                            // OK
-        path = configurator.getPath();                                          // OK
-        notification = configurator.getNotification();                          // OK
-        receiver = configurator.getDownloadReceiver();                          // OK
-        receivedConfig = configurator.getReceivedConfig();                      // OK
-        isHideDefaultNotification = configurator.isHideDefaultNotification();   // НЕ РЕКОМЕНДОВАНО OK
-        isViewNotificationOnFinish = configurator.isViewNotificationOnFinish(); // OK
-        isEnableLogging = configurator.isEnableLogging();                       // OK
-        isImmortal = configurator.isImmortal();                                 // OK
+        url = configurator.getUrl();
+        path = configurator.getPath();
+        notification = configurator.getNotification();
+        receiver = configurator.getDownloadReceiver();
+        receivedConfig = configurator.getReceivedConfig();
+        isHideDefaultNotification = configurator.isHideDefaultNotification();
+        isViewNotificationOnFinish = configurator.isViewNotificationOnFinish();
+        isEnableLogging = configurator.isEnableLogging();
+        isImmortal = configurator.isImmortal();
         isParallel = configurator.isParallel();
-        isSkipCache = configurator.isSkipCache();                               // OK
+        isSkipCache = configurator.isSkipCache();
         isSkipIfFileExist = configurator.isSkipIfFileExist();
-        isBreakNextIfError = configurator.isBreakNextIfError();
+        isBreakNextIfError = configurator.isAbortNextIfError();
         redownloadAttemptCount = configurator.getRedownloadAttemptCount();
-        delayBetweenLoad = configurator.getDelayBetweenLoad();
         load();
     }
 
@@ -78,7 +76,10 @@ final class Core {
                 .putExtra(BundleConst.DEFAULT_NOTIFICATION, isHideDefaultNotification)
                 .putExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, isViewNotificationOnFinish)
                 .putExtra(BundleConst.NOTIFICATION, notification)
-                .putExtra(BundleConst.RECEIVER, receiver);
+                .putExtra(BundleConst.RECEIVER, receiver)
+                .putExtra(BundleConst.SKIP_IF_EXIST, isSkipIfFileExist)
+                .putExtra(BundleConst.ABORT_IF_ERROR, isBreakNextIfError)
+                .putExtra(BundleConst.REDOWNLOAD_COUNT, redownloadAttemptCount);
     }
 
     private void setReceivers() {

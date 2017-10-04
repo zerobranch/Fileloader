@@ -16,6 +16,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import ru.agima.mobile.loader.core.DownloadReceiver.ReceiveCode;
+import ru.agima.mobile.loader.exception.FileIsExistException;
 import ru.agima.mobile.loader.utils.BundleConst;
 import ru.agima.mobile.loader.utils.Logger;
 
@@ -23,33 +24,66 @@ public class LoadManager {
     private DownloadReceiver receiver;
     private File currentFile;
     private String fileName;
+    private boolean isSkipIfFileExist;
+    private boolean isAbortNextIfError;
+    private int redownloadAttemptCount = 1;
+    private int currentRedownloadAttempt = 1;
+    private static volatile boolean isErrorPreviousDownload;
 
-    public synchronized void loadFile(String path, String url, DownloadReceiver resultReceiver) {
-        this.receiver = resultReceiver;
-        sendTrail(ReceiveCode.ON_START, null);
-        fileName = URLUtil.guessFileName(url, null, URLConnection.guessContentTypeFromName(url));
-        Logger.info("Start downloading", fileName, "file");
+    public void loadFile(String path, String url, DownloadReceiver resultReceiver) {
+        loadFile(path, url, resultReceiver, true);
+    }
 
-        try {
-            if (path == null || path.isEmpty()) {
-                downloading(url, null);
-            } else {
-                downloading(url, getOutputStream(path, fileName));
-            }
-        } catch (Throwable throwable) {
-            Logger.debug(throwable.getMessage(), throwable);
-            final Bundle bundle = new Bundle();
-            bundle.putSerializable(BundleConst.THROWABLE, throwable);
-            bundle.putString(BundleConst.FILE_NAME, fileName);
-            sendTrail(ReceiveCode.ON_ERROR, bundle);
+    private synchronized void loadFile(String path, String url, DownloadReceiver resultReceiver, boolean isFirstAttempt) {
+        if (isAbortNextIfError && isErrorPreviousDownload) {
+            Logger.debug("All downloads were interrupted");
             return;
         }
-        Logger.info("Download of", fileName, "file completed");
+        this.receiver = resultReceiver;
+        if (isFirstAttempt) {
+            sendTrail(ReceiveCode.ON_START, null);
+        }
+        fileName = URLUtil.guessFileName(url, null, URLConnection.guessContentTypeFromName(url));
+        Logger.debug("Start downloading", fileName, "file. Attempt", currentRedownloadAttempt, "from", redownloadAttemptCount);
+
+        try {
+            tryDownloading(path, url);
+        } catch (FileIsExistException e) {
+            Logger.debug("File", fileName, "is exist in", path);
+            sendTrail(ReceiveCode.ON_COMPLETED, null);
+        } catch (Throwable throwable) {
+            Logger.error("Downloading file", fileName, "is falled!");
+            Logger.error(throwable.getMessage(), throwable);
+            if (redownloadAttemptCount > currentRedownloadAttempt) {
+                currentRedownloadAttempt++;
+                loadFile(path, url, resultReceiver, false);
+            } else {
+                isErrorPreviousDownload = true;
+                final Bundle bundle = new Bundle();
+                bundle.putSerializable(BundleConst.THROWABLE, throwable);
+                bundle.putString(BundleConst.FILE_NAME, fileName);
+                sendTrail(ReceiveCode.ON_ERROR, bundle);
+            }
+            return;
+        }
+        Logger.debug("Download of", fileName, "file completed");
         sendTrail(ReceiveCode.ON_COMPLETED, null);
+    }
+
+    private void tryDownloading(String path, String url) throws IOException{
+        if (path == null || path.isEmpty()) {
+            downloading(url, null);
+        } else {
+            downloading(url, getOutputStream(path, fileName));
+        }
     }
 
     private OutputStream getOutputStream(String path, String fileName) throws IOException {
         currentFile = new File(path, fileName);
+        if (isSkipIfFileExist && currentFile.exists()) {
+            throw new FileIsExistException("File " + currentFile.getName() + " is exist");
+        }
+
         if (!currentFile.createNewFile() && !currentFile.exists()) {
             throw new IOException("Could not create " + currentFile.getName() + " file");
         }
@@ -80,7 +114,7 @@ public class LoadManager {
                     resultData.putInt(BundleConst.PROGRESS, progress);
                     sendTrail(ReceiveCode.ON_PROGRESS, resultData);
                 }
-                Logger.info("Uploaded", total, "from", fileLength, "== progress", progress, "%");
+                Logger.debug("Uploaded", total, "from", fileLength, "== progress", progress, "%");
                 output.write(data, 0, count);
             }
             output.flush();
@@ -94,12 +128,12 @@ public class LoadManager {
         sendTrail(ReceiveCode.ON_PROGRESS, resultData);
 
         if (output instanceof ByteArrayOutputStream) {
-            Logger.info("Sources of", fileName, "are redirected to bytes");
+            Logger.debug("Sources of", fileName, "are redirected to bytes");
             resultData.putByteArray(BundleConst.BYTES, ((ByteArrayOutputStream) output).toByteArray());
             resultData.putString(BundleConst.FILE_NAME, fileName);
             sendTrail(ReceiveCode.RECEIVED_FILE_SOURCE, resultData);
         } else {
-            Logger.info("Sources of", fileName, "are redirected to file");
+            Logger.debug("Sources of", fileName, "are redirected to file");
             resultData.putSerializable(BundleConst.FILE, currentFile);
             sendTrail(ReceiveCode.RECEIVED_FILE, resultData);
         }
@@ -119,5 +153,22 @@ public class LoadManager {
                 e.printStackTrace();
             }
         }
+    }
+
+    public LoadManager skipIfFileExist(boolean isSkipIfFileExist) {
+        this.isSkipIfFileExist = isSkipIfFileExist;
+        return this;
+    }
+
+    public LoadManager abortNextIfError(boolean isAbortNextIfError) {
+        this.isAbortNextIfError = isAbortNextIfError;
+        return this;
+    }
+
+    public LoadManager redownloadAttemptCount(int redownloadAttemptCount) {
+        if (redownloadAttemptCount > 0) {
+            this.redownloadAttemptCount = redownloadAttemptCount;
+        }
+        return this;
     }
 }

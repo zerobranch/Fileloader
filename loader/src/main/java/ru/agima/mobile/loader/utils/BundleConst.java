@@ -13,4 +13,7 @@ public interface BundleConst {
     String PROGRESS = "progress";
     String FILE = "file";
     String BYTES = "bytes";
+    String SKIP_IF_EXIST = "skit_if_exist";
+    String ABORT_IF_ERROR = "break_if_error";
+    String REDOWNLOAD_COUNT = "redownload_count";
 }

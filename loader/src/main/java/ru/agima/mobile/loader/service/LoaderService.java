@@ -72,7 +72,10 @@ public class LoaderService extends Service {
         final String url = intent.getStringExtra(BundleConst.URL);
         final String path = intent.getStringExtra(BundleConst.PATH);
         final DownloadReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
-        new LoadManager().loadFile(path, url, receiver);
+        new LoadManager().skipIfFileExist(intent.getBooleanExtra(BundleConst.SKIP_IF_EXIST, false))
+                .abortNextIfError(intent.getBooleanExtra(BundleConst.ABORT_IF_ERROR, false))
+                .redownloadAttemptCount(intent.getIntExtra(BundleConst.REDOWNLOAD_COUNT, 0))
+                .loadFile(path, url, receiver);
     }
 
     private final Handler.Callback handlerCallback = new Handler.Callback() {

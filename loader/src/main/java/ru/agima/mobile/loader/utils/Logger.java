@@ -14,7 +14,7 @@ public class Logger {
         isEnableLogging = true;
     }
 
-    public static void info(Object... args) {
+    public static void debug(Object... args) {
         if (args == null) return;
         final StringBuilder text = new StringBuilder();
         for (Object arg : args) {
@@ -24,7 +24,7 @@ public class Logger {
         d(text.toString());
     }
 
-    public static void debug(Object... args) {
+    public static void error(Object... args) {
         if (args == null) return;
         final StringBuilder text = new StringBuilder();
         for (Object arg : args) {
@@ -34,7 +34,7 @@ public class Logger {
         e(text.toString());
     }
 
-    public static void debug(String text, Throwable throwable) {
+    public static void error(String text, Throwable throwable) {
         e(text, throwable);
     }
 

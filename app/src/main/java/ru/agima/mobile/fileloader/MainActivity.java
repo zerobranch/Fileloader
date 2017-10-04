@@ -6,10 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.github.barteksc.pdfviewer.PDFView;
 
-import java.io.File;
-
-import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
-import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 import ru.agima.mobile.loader.core.DownloadReceiver;
 import ru.agima.mobile.loader.core.Loader;
 
@@ -29,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
         Loader loader = Loader.with(this).fromUrl("https://kniga.biz.ua/pdf/4434-mechtat-ne_vredno-1.pdf")
                 .enableLogging()
-                .downloadReceiver(receiver)
+                .redownloadAttemptCount(4)
+                .abortNextIfError()
+//                .downloadReceiver(receiver)
                 /*.onStart(new OnStart() {
                     @Override
                     public void apply() {
@@ -42,12 +40,12 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("====> OnCompleted");
 //
                     }
-                })*/.receivedFile(new ReceivedFile() {
+                })*//*.receivedFile(new ReceivedFile() {
                     @Override
                     public void set(File file) {
                         System.out.println("=====> file path " + file.getAbsolutePath());
                     }
-                })
+                })*/
                 /*.onError(new OnError() {
                     @Override
                     public void apply(String fileName, Throwable throwable) {
@@ -55,16 +53,16 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("====>>>> ERROR" + throwable.toString());
                     }
                 })*/
-                .receivedFileSource(new ReceivedFileSource() {
+                /*.receivedFileSource(new ReceivedFileSource() {
                     @Override
                     public void set(byte[] source, String fileName) {
 //                        System.out.println("====> file name " + fileName);
                         pdfView.fromBytes(source).defaultPage(0).load();
                     }
-                })
+                })*/
                 .load();
 //
-//        loader.addInQueue("https://zimslifeintcs.files.wordpress.com/2011/12/head-first-java-2nd-edition.pdf");
+        loader.addInQueue("https://zimslifeintcs.files.wordpress.com/2011/12/head-first-java-2nd-edition.pdf");
     }
 
 

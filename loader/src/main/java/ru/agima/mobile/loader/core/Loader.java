@@ -13,9 +13,9 @@ import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 
 public final class Loader {
+    private final String DEFAULT_PATH;
     private Context context;
     private Core core;
-    private final String DEFAULT_PATH;
     private Configurator configurator;
 
     private Loader(Context context) {
@@ -143,9 +143,8 @@ public final class Loader {
         private boolean isParallel;
         private boolean isSkipCache;
         private boolean isSkipIfFileExist;
-        private boolean isBreakNextIfError;
+        private boolean isAbortNextIfError;
         private int redownloadAttemptCount;
-        private long delayBetweenLoad;
 
         private Configurator(String url) {
             this.url = url.trim();
@@ -176,11 +175,6 @@ public final class Loader {
             return this;
         }
 
-        public Configurator delayBetweenLoad(long delayBetweenLoad) {
-            this.delayBetweenLoad = delayBetweenLoad;
-            return this;
-        }
-
         public Configurator hideDefaultNotification() {
             isHideDefaultNotification = true;
             return this;
@@ -206,8 +200,8 @@ public final class Loader {
             return this;
         }
 
-        public Configurator breakNextIfError() {
-            isBreakNextIfError = true;
+        public Configurator abortNextIfError() {
+            isAbortNextIfError = true;
             return this;
         }
 
@@ -266,16 +260,12 @@ public final class Loader {
             return isEnableLogging;
         }
 
-        boolean isBreakNextIfError() {
-            return isBreakNextIfError;
+        boolean isAbortNextIfError() {
+            return isAbortNextIfError;
         }
 
         int getRedownloadAttemptCount() {
             return redownloadAttemptCount;
-        }
-
-        long getDelayBetweenLoad() {
-            return delayBetweenLoad;
         }
 
         boolean isSkipIfFileExist() {
