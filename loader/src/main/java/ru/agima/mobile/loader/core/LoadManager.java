@@ -1,7 +1,6 @@
 package ru.agima.mobile.loader.core;
 
 import android.os.Bundle;
-import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.webkit.URLUtil;
 
@@ -21,13 +20,13 @@ import ru.agima.mobile.loader.utils.BundleConst;
 import ru.agima.mobile.loader.utils.Logger;
 
 public class LoadManager {
-    private ResultReceiver receiver;
+    private DownloadReceiver receiver;
     private File currentFile;
     private String fileName;
 
-    public synchronized void loadFile(String path, String url, ResultReceiver resultReceiver) {
+    public synchronized void loadFile(String path, String url, DownloadReceiver resultReceiver) {
         this.receiver = resultReceiver;
-        sendTrail(ReceiveCode.ON_START.getCode(), null);
+        sendTrail(ReceiveCode.ON_START, null);
         fileName = URLUtil.guessFileName(url, null, URLConnection.guessContentTypeFromName(url));
         Logger.info("Start downloading", fileName, "file");
 
@@ -42,11 +41,11 @@ public class LoadManager {
             final Bundle bundle = new Bundle();
             bundle.putSerializable(BundleConst.THROWABLE, throwable);
             bundle.putString(BundleConst.FILE_NAME, fileName);
-            sendTrail(ReceiveCode.ON_ERROR.getCode(), bundle);
+            sendTrail(ReceiveCode.ON_ERROR, bundle);
             return;
         }
         Logger.info("Download of", fileName, "file completed");
-        sendTrail(ReceiveCode.ON_COMPLETED.getCode(), null);
+        sendTrail(ReceiveCode.ON_COMPLETED, null);
     }
 
     private OutputStream getOutputStream(String path, String fileName) throws IOException {
@@ -79,7 +78,7 @@ public class LoadManager {
                     final Bundle resultData = new Bundle();
                     lastProgress = progress;
                     resultData.putInt(BundleConst.PROGRESS, progress);
-                    sendTrail(ReceiveCode.ON_PROGRESS.getCode(), resultData);
+                    sendTrail(ReceiveCode.ON_PROGRESS, resultData);
                 }
                 Logger.info("Uploaded", total, "from", fileLength, "== progress", progress, "%");
                 output.write(data, 0, count);
@@ -92,23 +91,23 @@ public class LoadManager {
 
         final Bundle resultData = new Bundle();
         resultData.putInt(BundleConst.PROGRESS, 100);
-        sendTrail(ReceiveCode.ON_PROGRESS.getCode(), resultData);
+        sendTrail(ReceiveCode.ON_PROGRESS, resultData);
 
         if (output instanceof ByteArrayOutputStream) {
             Logger.info("Sources of", fileName, "are redirected to bytes");
             resultData.putByteArray(BundleConst.BYTES, ((ByteArrayOutputStream) output).toByteArray());
             resultData.putString(BundleConst.FILE_NAME, fileName);
-            sendTrail(ReceiveCode.RECEIVED_FILE_SOURCE.getCode(), resultData);
+            sendTrail(ReceiveCode.RECEIVED_FILE_SOURCE, resultData);
         } else {
             Logger.info("Sources of", fileName, "are redirected to file");
             resultData.putSerializable(BundleConst.FILE, currentFile);
-            sendTrail(ReceiveCode.RECEIVED_FILE.getCode(), resultData);
+            sendTrail(ReceiveCode.RECEIVED_FILE, resultData);
         }
     }
 
-    private void sendTrail(int resultCode, Bundle resultData) {
-        if (receiver != null) {
-            receiver.send(resultCode, resultData);
+    private void sendTrail(ReceiveCode receiveCode, Bundle resultData) {
+        if (receiver != null && receiver.isExistReceiver(receiveCode)) {
+            receiver.send(receiveCode.getCode(), resultData);
         }
     }
 

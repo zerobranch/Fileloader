@@ -8,10 +8,10 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
+import ru.agima.mobile.loader.core.DownloadReceiver;
 import ru.agima.mobile.loader.core.LoadManager;
 import ru.agima.mobile.loader.utils.BundleConst;
 
@@ -71,7 +71,7 @@ public class LoaderService extends Service {
     protected void onHandleIntent(Intent intent) {
         final String url = intent.getStringExtra(BundleConst.URL);
         final String path = intent.getStringExtra(BundleConst.PATH);
-        final ResultReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
+        final DownloadReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
         new LoadManager().loadFile(path, url, receiver);
     }
 
