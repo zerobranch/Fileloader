@@ -59,6 +59,7 @@ public class LoaderService extends Service {
     @Override
     public void onDestroy() {
         serviceLooper.quit();
+        serviceLooper.getThread().interrupt();
     }
 
     @Override

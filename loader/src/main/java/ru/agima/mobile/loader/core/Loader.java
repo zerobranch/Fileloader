@@ -46,16 +46,8 @@ public final class Loader {
         core.addInQueue(path, url);
     }
 
-    public void cancelByName(String fileName) {
-        core.cancelByName(fileName);
-    }
-
-    public void cancelByUrl(String url) {
-        core.cancelByUrl(url);
-    }
-
-    public void cancelAll() {
-        core.cancelAll();
+    public void cancel() {
+        core.cancel();
         context = null;
     }
 

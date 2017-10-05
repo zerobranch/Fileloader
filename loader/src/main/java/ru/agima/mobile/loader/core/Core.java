@@ -21,7 +21,6 @@ final class Core {
     private boolean isViewNotificationOnFinish;
     private boolean isEnableLogging;
     private boolean isImmortal;
-    private boolean isParallel;
     private boolean isSkipCache;
     private boolean isSkipIfFileExist;
     private boolean isBreakNextIfError;
@@ -38,7 +37,6 @@ final class Core {
         isViewNotificationOnFinish = configurator.isViewNotificationOnFinish();
         isEnableLogging = configurator.isEnableLogging();
         isImmortal = configurator.isImmortal();
-        isParallel = configurator.isParallel();
         isSkipCache = configurator.isSkipCache();
         isSkipIfFileExist = configurator.isSkipIfFileExist();
         isBreakNextIfError = configurator.isAbortNextIfError();
@@ -105,18 +103,7 @@ final class Core {
         load();
     }
 
-    void cancelByName(String fileName) {
-      /*  Context.startService()
-        Context.stopService()
-        Service.stopSelf()
-        Service.stopSelfResult()*/
-    }
-
-    void cancelByUrl(String url) {
-        // remove first and last space
-    }
-
-    void cancelAll() {
+    void cancel() {
         destroyService();
         context = null;
     }
