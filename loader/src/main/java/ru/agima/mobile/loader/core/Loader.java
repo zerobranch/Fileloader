@@ -11,6 +11,7 @@ import ru.agima.mobile.loader.callbacks.lifecycle.OnProgress;
 import ru.agima.mobile.loader.callbacks.lifecycle.OnStart;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
+import ru.agima.mobile.loader.utils.Validator;
 
 public final class Loader {
     private final String DEFAULT_PATH;
@@ -20,6 +21,7 @@ public final class Loader {
 
     private Loader(Context context) {
         this.context = context;
+        Validator.getNonNull(context, "Context should not be null");
         DEFAULT_PATH = context.getCacheDir().getAbsolutePath();
     }
 
@@ -43,7 +45,7 @@ public final class Loader {
     }
 
     public void addInQueue(String url, String path) {
-        core.addInQueue(path, url);
+        core.addInQueue(url, path);
     }
 
     public void cancel() {
@@ -94,7 +96,7 @@ public final class Loader {
         }
 
         public Loader load() {
-            return configurator.build(this);
+            return configurator.load();
         }
 
         ReceivedFile getReceivedFile() {
@@ -124,7 +126,7 @@ public final class Loader {
 
     public final class Configurator {
         private final String url;
-        private String path = context.getCacheDir().getAbsolutePath();
+        private String path = DEFAULT_PATH;
         private Notification notification;
         private DownloadReceiver downloadReceiver;
         private ReceivedConfig receivedConfig;
@@ -132,7 +134,6 @@ public final class Loader {
         private boolean isEnableLogging;
         private boolean isViewNotificationOnFinish;
         private boolean isImmortal;
-        private boolean isParallel;
         private boolean isSkipCache;
         private boolean isSkipIfFileExist;
         private boolean isAbortNextIfError;
@@ -143,7 +144,7 @@ public final class Loader {
         }
 
         public Configurator to(String path) {
-            this.path = path.trim();
+            this.path = path;
             return this;
         }
 
@@ -175,11 +176,6 @@ public final class Loader {
 
         public Configurator viewNotificationOnFinish() {
             this.isViewNotificationOnFinish = true;
-            return this;
-        }
-
-        public Configurator parallelLoad() {
-            isParallel = true;
             return this;
         }
 
@@ -245,10 +241,6 @@ public final class Loader {
             return isSkipCache;
         }
 
-        boolean isParallel() {
-            return isParallel;
-        }
-
         boolean isEnableLogging() {
             return isEnableLogging;
         }
@@ -266,10 +258,6 @@ public final class Loader {
         }
 
         public Loader load() {
-            return Loader.this.build(this);
-        }
-
-        public Loader build(ReceivedConfig receivedConfig) {
             return Loader.this.build(this);
         }
     }

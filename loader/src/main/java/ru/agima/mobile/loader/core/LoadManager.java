@@ -1,6 +1,7 @@
 package ru.agima.mobile.loader.core;
 
 import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.webkit.URLUtil;
 
@@ -11,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -21,7 +23,7 @@ import ru.agima.mobile.loader.utils.BundleConst;
 import ru.agima.mobile.loader.utils.Logger;
 
 public class LoadManager {
-    private DownloadReceiver receiver;
+    private ResultReceiver receiver;
     private File currentFile;
     private String fileName;
     private boolean isSkipIfFileExist;
@@ -30,11 +32,11 @@ public class LoadManager {
     private int currentRedownloadAttempt = 1;
     private static volatile boolean isErrorPreviousDownload;
 
-    public void loadFile(String path, String url, DownloadReceiver resultReceiver) {
+    public void loadFile(String path, String url, ResultReceiver resultReceiver) {
         loadFile(path, url, resultReceiver, true);
     }
 
-    private synchronized void loadFile(String path, String url, DownloadReceiver resultReceiver, boolean isFirstAttempt) {
+    private synchronized void loadFile(String path, String url, ResultReceiver resultReceiver, boolean isFirstAttempt) {
         if (isAbortNextIfError && isErrorPreviousDownload) {
             Logger.debug("All downloads were interrupted");
             return;
@@ -51,6 +53,9 @@ public class LoadManager {
         } catch (FileIsExistException e) {
             Logger.debug("File", fileName, "is exist in", path);
             sendTrail(ReceiveCode.ON_COMPLETED, null);
+        } catch (InterruptedIOException e) {
+            Logger.debug("All downloads were interrupted");
+            return;
         } catch (Throwable throwable) {
             Logger.error("Downloading file", fileName, "is falled!");
             Logger.error(throwable.getMessage(), throwable);
@@ -140,7 +145,7 @@ public class LoadManager {
     }
 
     private void sendTrail(ReceiveCode receiveCode, Bundle resultData) {
-        if (receiver != null && receiver.isExistReceiver(receiveCode)) {
+        if (receiver != null) {
             receiver.send(receiveCode.getCode(), resultData);
         }
     }

@@ -75,25 +75,6 @@ public class DownloadReceiver extends ResultReceiver {
         }
     }
 
-    boolean isExistReceiver(ReceiveCode receiveCode) {
-        switch (receiveCode) {
-            case RECEIVED_FILE:
-                return receivedFile != null;
-            case RECEIVED_FILE_SOURCE:
-                return receivedFileSource != null;
-            case ON_START:
-                return onStart != null;
-            case ON_COMPLETED:
-                return onCompleted != null;
-            case ON_PROGRESS:
-                return onProgress != null;
-            case ON_ERROR:
-                return onError != null;
-            default:
-                return false;
-        }
-    }
-
     enum ReceiveCode {
         EMPTY(-1),
         RECEIVED_FILE(0),

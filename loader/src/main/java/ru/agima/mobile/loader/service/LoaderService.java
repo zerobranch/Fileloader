@@ -8,10 +8,10 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.ResultReceiver;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 
-import ru.agima.mobile.loader.core.DownloadReceiver;
 import ru.agima.mobile.loader.core.LoadManager;
 import ru.agima.mobile.loader.utils.BundleConst;
 
@@ -19,7 +19,6 @@ public class LoaderService extends Service {
     private volatile Looper serviceLooper;
     private volatile Handler handler;
     public static final int DEFAULT_NOTIFICATION_ID = 43534;
-    private boolean redelivery;
 
     @Override
     public void onCreate() {
@@ -36,7 +35,7 @@ public class LoaderService extends Service {
         msg.arg1 = startId;
         msg.obj = intent;
         handler.sendMessage(msg);
-        return redelivery ? START_REDELIVER_INTENT : START_NOT_STICKY;
+        return START_NOT_STICKY;
     }
 
     @SuppressWarnings("deprecation")
@@ -72,7 +71,7 @@ public class LoaderService extends Service {
     protected void onHandleIntent(Intent intent) {
         final String url = intent.getStringExtra(BundleConst.URL);
         final String path = intent.getStringExtra(BundleConst.PATH);
-        final DownloadReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
+        final ResultReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
         new LoadManager().skipIfFileExist(intent.getBooleanExtra(BundleConst.SKIP_IF_EXIST, false))
                 .abortNextIfError(intent.getBooleanExtra(BundleConst.ABORT_IF_ERROR, false))
                 .redownloadAttemptCount(intent.getIntExtra(BundleConst.REDOWNLOAD_COUNT, 0))

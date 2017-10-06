@@ -14,4 +14,10 @@ public class Validator {
             throw new IllegalArgumentException(throwMessage);
         return s;
     }
+
+    public static int getNotNegative(int val, String throwMessage) {
+        if (val < 0)
+            throw new IllegalArgumentException(throwMessage);
+        return val;
+    }
 }

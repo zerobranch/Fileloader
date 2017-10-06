@@ -95,9 +95,10 @@ final class Core {
         }
         Validator.getNonEmptyValue(url, "Argument 'url' should not be empty");
         Validator.getNonNull(context, "Context should not be null");
+        Validator.getNotNegative(redownloadAttemptCount, "Argument 'redownloadAttemptCount' should not be null");
     }
 
-    void addInQueue(String path, String url) {
+    void addInQueue(String url, String path) {
         this.url = url;
         this.path = path;
         load();
