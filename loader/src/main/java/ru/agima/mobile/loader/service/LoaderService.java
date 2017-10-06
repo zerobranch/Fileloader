@@ -9,8 +9,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.ResultReceiver;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
 
 import ru.agima.mobile.loader.core.LoadManager;
 import ru.agima.mobile.loader.utils.BundleConst;
@@ -62,12 +60,10 @@ public class LoaderService extends Service {
     }
 
     @Override
-    @Nullable
     public IBinder onBind(Intent intent) {
         return null;
     }
 
-    @WorkerThread
     protected void onHandleIntent(Intent intent) {
         final String url = intent.getStringExtra(BundleConst.URL);
         final String path = intent.getStringExtra(BundleConst.PATH);

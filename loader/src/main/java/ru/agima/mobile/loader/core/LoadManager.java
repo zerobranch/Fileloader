@@ -2,7 +2,6 @@ package ru.agima.mobile.loader.core;
 
 import android.os.Bundle;
 import android.os.ResultReceiver;
-import android.support.annotation.Nullable;
 import android.webkit.URLUtil;
 
 import java.io.BufferedInputStream;
@@ -97,7 +96,7 @@ public class LoadManager {
         return new FileOutputStream(currentFile);
     }
 
-    private void downloading(String url, @Nullable OutputStream output) throws IOException {
+    private void downloading(String url, OutputStream output) throws IOException {
         InputStream input = null;
         if (output == null) {
             output = new ByteArrayOutputStream();
