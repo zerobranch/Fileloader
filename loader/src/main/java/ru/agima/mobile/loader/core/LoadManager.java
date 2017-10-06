@@ -14,10 +14,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
 import ru.agima.mobile.loader.core.DownloadReceiver.ReceiveCode;
+import ru.agima.mobile.loader.exception.BadResponseException;
 import ru.agima.mobile.loader.exception.FileIsExistException;
 import ru.agima.mobile.loader.utils.BundleConst;
 import ru.agima.mobile.loader.utils.Logger;
@@ -38,7 +40,7 @@ public class LoadManager {
 
     private synchronized void loadFile(String path, String url, ResultReceiver resultReceiver, boolean isFirstAttempt) {
         if (isAbortNextIfError && isErrorPreviousDownload) {
-            Logger.debug("All downloads were interrupted");
+            Logger.debug("All next downloads were interrupted");
             return;
         }
         this.receiver = resultReceiver;
@@ -101,8 +103,11 @@ public class LoadManager {
             output = new ByteArrayOutputStream();
         }
         try {
-            final URLConnection connection = new URL(url).openConnection();
+            final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.connect();
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                throw new BadResponseException("Server return " + connection.getResponseCode() + " " + connection.getResponseMessage());
+            }
             final int fileLength = connection.getContentLength();
             input = new BufferedInputStream(connection.getInputStream());
             final byte data[] = new byte[1024];
