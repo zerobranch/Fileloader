@@ -14,7 +14,7 @@ import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
 import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
 import ru.agima.mobile.loader.utils.BundleConst;
 
-public class DownloadReceiver extends ResultReceiver {
+final class DownloadReceiver extends ResultReceiver {
     private ReceivedFile receivedFile;
     private ReceivedFileSource receivedFileSource;
     private OnStart onStart;
@@ -23,11 +23,11 @@ public class DownloadReceiver extends ResultReceiver {
     private OnError onError;
     private boolean isSubscribed;
 
-    public DownloadReceiver() {
+    DownloadReceiver() {
         this(new Handler());
     }
 
-    public DownloadReceiver(Handler handler) {
+    DownloadReceiver(Handler handler) {
         super(handler);
     }
 
