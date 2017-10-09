@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.content.Context;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import ru.agima.mobile.loader.callbacks.lifecycle.OnCompleted;
 import ru.agima.mobile.loader.callbacks.lifecycle.OnError;
@@ -35,17 +36,9 @@ public final class Loader {
         return this;
     }
 
-    public Configurator fromUrl(String url) {
+    public Configurator addInQueue(String url) {
         configurator = new Configurator(url);
         return configurator;
-    }
-
-    public void addInQueue(String url) {
-        addInQueue(url, DEFAULT_PATH);
-    }
-
-    public void addInQueue(String url, String path) {
-        core.addInQueue(url, path);
     }
 
     public void cancel() {
@@ -125,7 +118,7 @@ public final class Loader {
     }
 
     public final class Configurator {
-        private final String url;
+        private final ArrayList<String> urls;
         private String path = DEFAULT_PATH;
         private Notification notification;
         private DownloadReceiver downloadReceiver;
@@ -140,7 +133,8 @@ public final class Loader {
         private int redownloadAttemptCount;
 
         private Configurator(String url) {
-            this.url = url.trim();
+            urls = new ArrayList<>();
+            addInQueue(url);
         }
 
         public Configurator to(String path) {
@@ -199,6 +193,11 @@ public final class Loader {
             return this;
         }
 
+        public Configurator addInQueue(String url) {
+            urls.add(url.trim());
+            return this;
+        }
+
         public ReceivedConfig downloadReceiver(DownloadReceiver downloadReceiver) {
             this.downloadReceiver = downloadReceiver;
             receivedConfig = new ReceivedConfig();
@@ -213,8 +212,8 @@ public final class Loader {
             return receivedConfig;
         }
 
-        String getUrl() {
-            return url;
+        ArrayList<String> getUrls() {
+            return urls;
         }
 
         String getPath() {

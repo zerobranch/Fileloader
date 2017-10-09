@@ -10,6 +10,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.ResultReceiver;
 
+import java.util.ArrayList;
+
 import ru.agima.mobile.loader.core.LoadManager;
 import ru.agima.mobile.loader.utils.BundleConst;
 
@@ -17,6 +19,7 @@ public class LoaderService extends Service {
     private volatile Looper serviceLooper;
     private volatile Handler handler;
     public static final int DEFAULT_NOTIFICATION_ID = 43534;
+    private ArrayList<String> urls;
 
     @Override
     public void onCreate() {
@@ -29,10 +32,14 @@ public class LoaderService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        final Message msg = handler.obtainMessage();
-        msg.arg1 = startId;
-        msg.obj = intent;
-        handler.sendMessage(msg);
+        urls = intent.getStringArrayListExtra(BundleConst.URL);
+        for (int i = 0; i < urls.size(); i++) {
+            final Message msg = handler.obtainMessage();
+            msg.arg1 = startId;
+            msg.arg2 = i;
+            msg.obj = intent;
+            handler.sendMessage(msg);
+        }
         return START_NOT_STICKY;
     }
 
@@ -64,8 +71,22 @@ public class LoaderService extends Service {
         return null;
     }
 
-    protected void onHandleIntent(Intent intent) {
-        final String url = intent.getStringExtra(BundleConst.URL);
+    private final Handler.Callback handlerCallback = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            final Intent intent = (Intent) msg.obj;
+            final int urlIndex = msg.arg2;
+            setImmortal(intent);
+            onHandleIntent(intent, urls.get(urlIndex));
+            stopForeground(intent.getBooleanExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, false));
+            if (urlIndex == urls.size() - 1) {
+                stopSelf(msg.arg1);
+            }
+            return true;
+        }
+    };
+
+    protected void onHandleIntent(Intent intent, String url) {
         final String path = intent.getStringExtra(BundleConst.PATH);
         final ResultReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
         new LoadManager().skipIfFileExist(intent.getBooleanExtra(BundleConst.SKIP_IF_EXIST, false))
@@ -73,16 +94,4 @@ public class LoaderService extends Service {
                 .redownloadAttemptCount(intent.getIntExtra(BundleConst.REDOWNLOAD_COUNT, 0))
                 .loadFile(path, url, receiver);
     }
-
-    private final Handler.Callback handlerCallback = new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            final Intent intent = (Intent) msg.obj;
-            setImmortal(intent);
-            onHandleIntent(intent);
-            stopForeground(intent.getBooleanExtra(BundleConst.VIEW_NOTIFICATION_ON_FINISH, false));
-            stopSelf(msg.arg1);
-            return true;
-        }
-    };
 }

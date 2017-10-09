@@ -1,5 +1,7 @@
 package ru.agima.mobile.loader.utils;
 
+import java.util.List;
+
 public class Validator {
 
     public static <T> T getNonNull(T o, String throwMessage) {
@@ -19,5 +21,12 @@ public class Validator {
         if (val < 0)
             throw new IllegalArgumentException(throwMessage);
         return val;
+    }
+
+    public static List<?> getNonEmptyValue(List<?> list, String throwMessage) {
+        getNonNull(list, throwMessage);
+        if (list.isEmpty())
+            throw new IllegalArgumentException(throwMessage);
+        return list;
     }
 }

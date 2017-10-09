@@ -4,6 +4,8 @@ import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
+import java.util.ArrayList;
+
 import ru.agima.mobile.loader.core.Loader.Configurator;
 import ru.agima.mobile.loader.service.LoaderService;
 import ru.agima.mobile.loader.utils.BundleConst;
@@ -12,7 +14,7 @@ import ru.agima.mobile.loader.utils.Validator;
 
 final class Core {
     private Context context;
-    private String url;
+    private ArrayList<String> urls;
     private String path;
     private DownloadReceiver receiver;
     private Loader.ReceivedConfig receivedConfig;
@@ -26,9 +28,9 @@ final class Core {
     private boolean isBreakNextIfError;
     private int redownloadAttemptCount;
 
-    public void build(Configurator configurator, Context context) {
+    void build(Configurator configurator, Context context) {
         this.context = context;
-        url = configurator.getUrl();
+        urls = configurator.getUrls();
         path = configurator.getPath();
         notification = configurator.getNotification();
         receiver = configurator.getDownloadReceiver();
@@ -68,7 +70,7 @@ final class Core {
     private Intent getPreparedIntent() {
         return new Intent()
                 .setClass(context, LoaderService.class)
-                .putExtra(BundleConst.URL, url)
+                .putStringArrayListExtra(BundleConst.URL, urls)
                 .putExtra(BundleConst.PATH, path)
                 .putExtra(BundleConst.IMMORTAL, isImmortal)
                 .putExtra(BundleConst.DEFAULT_NOTIFICATION, isHideDefaultNotification)
@@ -93,15 +95,9 @@ final class Core {
         if (path != null) {
             Validator.getNonEmptyValue(path, "Argument 'path' should not be empty");
         }
-        Validator.getNonEmptyValue(url, "Argument 'url' should not be empty");
+        Validator.getNonEmptyValue(urls, "List 'urls' should not be empty");
         Validator.getNonNull(context, "Context should not be null");
         Validator.getNotNegative(redownloadAttemptCount, "Argument 'redownloadAttemptCount' should not be null");
-    }
-
-    void addInQueue(String url, String path) {
-        this.url = url;
-        this.path = path;
-        load();
     }
 
     void cancel() {
@@ -111,7 +107,9 @@ final class Core {
 
     private void destroyService() {
         unsubscribe();
-        context.stopService(new Intent(context, LoaderService.class));
+        if (context != null) {
+            context.stopService(new Intent(context, LoaderService.class));
+        }
     }
 
     void unsubscribe() {

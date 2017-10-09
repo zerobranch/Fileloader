@@ -55,6 +55,10 @@ public class LoadManager {
             Logger.debug("File", fileName, "is exist in", path);
             sendTrail(ReceiveCode.ON_COMPLETED, null);
         } catch (InterruptedIOException e) {
+            if (currentFile.delete()) {
+                Logger.debug("All downloads were interrupted and file", currentFile.getName(), "was removed");
+                return;
+            }
             Logger.debug("All downloads were interrupted");
             return;
         } catch (Throwable throwable) {

@@ -23,6 +23,10 @@ public class DownloadReceiver extends ResultReceiver {
     private OnError onError;
     private boolean isSubscribed;
 
+    public DownloadReceiver() {
+        this(new Handler());
+    }
+
     public DownloadReceiver(Handler handler) {
         super(handler);
     }
