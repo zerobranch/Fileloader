@@ -2,6 +2,7 @@ package ru.agima.mobile.loader.core;
 
 import android.app.Notification;
 import android.content.Context;
+import android.os.Handler;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -198,8 +199,14 @@ public final class Loader {
             return this;
         }
 
-        public ReceivedConfig downloadReceiver(DownloadReceiver downloadReceiver) {
-            this.downloadReceiver = downloadReceiver;
+        public ReceivedConfig downloadReceiver() {
+            this.downloadReceiver = new DownloadReceiver();
+            receivedConfig = new ReceivedConfig();
+            return receivedConfig;
+        }
+
+        public ReceivedConfig downloadReceiver(Handler handler) {
+            this.downloadReceiver = new DownloadReceiver(handler);
             receivedConfig = new ReceivedConfig();
             return receivedConfig;
         }
