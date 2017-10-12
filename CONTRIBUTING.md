@@ -1,8 +1,8 @@
 Contributing
 ------------
 
-fileloader is an open source, community-driven project.
+fileloader is an open source.
 
-If you would like to contribute code you can do so through GitHub by forking the repository and sending a pull request (on a branch other than master).
+If you want to contribute to the development of the project, you can do this by sending a pull request (on a branch other than the master).
 
-When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
+When sending the code, please try to follow the existing conventions and style of writing the code so that the code is as readable as possible.
