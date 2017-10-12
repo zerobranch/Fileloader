@@ -71,21 +71,19 @@ loader.unsubscribe - отписаться от событий (загрузка 
 Добавьте в корневой build.gradle следующий репозиторий:
 ```groovy
 allprojects {
-	repositories {
-		...
-		maven { url 'https://jitpack.io' }
-	}
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
 }
 ```
 
 Добавьте в build.gradle вашего модуля следующую зависимость:
 ```groovy
 dependencies {
-	compile 'com.github.ArmanSar:fileloader:0.1.0'
+    compile 'com.github.ArmanSar:fileloader:0.1.0'
 }
 ```
-
-
 
 ## License
 
