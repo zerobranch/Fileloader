@@ -88,7 +88,7 @@ final class DownloadReceiver extends ResultReceiver {
         ON_ERROR(4),
         ON_PROGRESS(5);
 
-        private int code;
+        private final int code;
 
         ReceiveCode(int code) {
             this.code = code;

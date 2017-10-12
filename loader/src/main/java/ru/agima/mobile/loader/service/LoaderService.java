@@ -86,7 +86,7 @@ public class LoaderService extends Service {
         }
     };
 
-    protected void onHandleIntent(Intent intent, String url) {
+    private void onHandleIntent(Intent intent, String url) {
         final String path = intent.getStringExtra(BundleConst.PATH);
         final ResultReceiver receiver = intent.getParcelableExtra(BundleConst.RECEIVER);
         new LoadManager().skipIfFileExist(intent.getBooleanExtra(BundleConst.SKIP_IF_EXIST, false))
