@@ -85,7 +85,7 @@ dependencies {
 }
 ```
 
-## License
+## Лицензия
 
 ```
 The MIT License (MIT)
