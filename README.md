@@ -60,7 +60,6 @@ loader.unsubscribe - unsubscribe from events (download will not be interrupted)
 
 **Note**
 ```
-- если не указать to("YOUR_PATH"), то по умолчанию файлы будут сохраняется в кэше приложения - Context.getCacheDir()
 - if you do not specify to ("YOUR_PATH"), then by default the files will be saved in the application cache - Context.getCacheDir()
 - notification(Notification), hideDefaultNotification(), viewNotificationOnFinish() - work only when you set makeImmortal()
 - to set the events (onStart, onError, etc.), you must set DownloadReceiver
@@ -82,7 +81,7 @@ allprojects {
 Add the following dependency to your module's build.gradle:
 ```groovy
 dependencies {
-    compile 'com.github.ArmanSar:fileloader:0.1.1'
+    compile 'com.github.ArmanSar:fileloader:0.1.0'
 }
 ```
 
