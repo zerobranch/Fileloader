@@ -2,19 +2,19 @@
 [![Jitpack ](https://img.shields.io/jitpack/v/jitpack/maven-simple.svg)](https://jitpack.io/)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ArmanSar/fileloader/blob/master/LICENSE)
 
-Библиотека для управления загрузками файлов на платформе Android
+Library for managing file downloads on the Android platform
 
-## Описание
-File Loader - это библиотека для платформы android. Она позволяет скачивать любые файлы без особых услилий и получать результат в указанном вами потоке. 
+## Descripton
+File Loader - is a library for the android platform. It allows you to download any files without much effort and get the result in the thread you specified.
 
-## Возможности
-- Скачивать любые файлы по их ссылке
-- Сохранять файлы в указанной папке
-- Получать результат в виде байтов
-- Добавлять файлы в очередь для их дальнейшего скачивания
-- Отслеживать все этапы скачивания файлов
+## Capabilities
+- Download any files by their link
+- Save files in the specified folder
+- Get the result as bytes
+- Add files to the queue for their further download
+- Track all stages of downloading files
 
-## Пример использования
+## How to use ?
 
 ```java
 Loader.with(Context)
@@ -22,53 +22,54 @@ Loader.with(Context)
         .load();
 ```
 
-## Описание методов
-**Обязательные**
+## Description of methods
+**Required**
 ```
-- with(Cntext) - основной метод, в него передается объкт Context
-- addInQueue("YOUR_URL") - добавить файл в очередь для загрузки
-- load() - начать загрузку файлов
-```
-
-**Необязательные**
-```
-- to("YOUR_PATH") - путь, куда будет загружен файл
-- addInQueue("YOUR_URL") - добавить файл в очередь для загрузки
-- skipIfFileExist() - загрузка будет прекращена, если файл уже существует (по умолчанию файл перезаписывается)
-- abortNextIfError() - если произошла ошибка во время скачивания - прервать остальные загрузки ожидающие в очереди
-- makeImmortal() - загрузка файлов будет осуществляться на переднем плане. Загрузка не прекратится даже если её выгрузить из памяти
-- notification(Notification) - подключить свое уведомление, которое будет отображаться во время загрузки файлов
-- redownloadAttemptCount(4) - количество попыток загрузить файл, в случае если произошла ошибка
-- skipCache() - не сохранять файл в памяти устройства
-- viewNotificationOnFinish() - не закрывать уведомление после загрузки файлов 
-- hideDefaultNotification() - скрывать уведомление при загрузке файлов (не рекомендуется)
-- downloadReceiver() - установка DownloadReceiver позволит установить события для получения обратной связь с загрузчика
-- onStart(OnStart) - событие начала загрузки очередного файла
-- onError(OnError) - событие возникнования ошибки при загрузке файла
-- onCompleted(OnCompleted) - событие завершения загрузки очередного файла
-- onProgress(OnProgress) - событие для отслеживания хода загрузки
-- receivedFile(ReceivedFile) - после завершения загрузки получить путь к загруженному файлу
-- receivedFileSource(ReceivedFileSource) - после завершения загрузки получить исходный файл в виде массива байтов
-- enableLogging() - включить логирование во время загрузки файлов
+- with(Cntext) - the main method with the context
+- addInQueue("YOUR_URL") - add the file to the download queue
+- load() - start downloading files
 ```
 
-**Дополнительные методы**
+**Optional**
 ```
-loader.cancel() - завершить все загрузки и удалить недозагруженный файл
-loader.unsubscribe - отписаться от событий (загрузка не будет прервана)
+- to("YOUR_PATH") - the path to which the file will be uploaded
+- addInQueue("YOUR_URL") - add file to the download queue
+- skipIfFileExist() - the download will be terminated if the file already exists (by default, the file is overwritten)
+- abortNextIfError() - interrupt the remaining downloads waiting in the queue, if an error occurred during the download
+- makeImmortal() - the files will be downloaded in the foreground. Download does not stop even if it is unloaded from memory
+- notification(Notification) - connect your notification, which will be displayed at the time of downloading files
+- redownloadAttemptCount(4) - the number of attempts to download the file, in case there was an error
+- skipCache() - do not save the file in the device memory
+- viewNotificationOnFinish() - do not close the notification after downloading files
+- hideDefaultNotification() - hide notification when loading files (not recommended)
+- downloadReceiver() - setting DownloadReceiver will allow you to set events to get feedback from the loader
+- onStart(OnStart) - the event notifies the start of the download of the next file
+- onError(OnError) - the event notifies you when an error occurred while loading the file
+- onCompleted(OnCompleted) - the event notifies when the next file is being downloaded
+- onProgress(OnProgress) - event to track the progress of the download
+- receivedFile(ReceivedFile) - after the download is complete, get the path to the downloaded file
+- receivedFileSource(ReceivedFileSource) - after the download is complete, get the source file as a byte array
+- enableLogging() - enable logging while downloading files
 ```
 
-**Примечание**
+**Additional Methods**
+```
+loader.cancel() - abort all downloads and delete the underloaded file
+loader.unsubscribe - unsubscribe from events (download will not be interrupted)
+```
+
+**Note**
 ```
 - если не указать to("YOUR_PATH"), то по умолчанию файлы будут сохраняется в кэше приложения - Context.getCacheDir()
-- notification(Notification), hideDefaultNotification(), viewNotificationOnFinish() - работают только при установке makeImmortal()
-- для установки событий (onStart, onError и т.п.) необходимо установить DownloadReceiver
-- при установке собятия receivedFileSource - данные перейдут в этот метод БЕЗ СОХРАНЕНИЯ на устройстве 
+- if you do not specify to ("YOUR_PATH"), then by default the files will be saved in the application cache - Context.getCacheDir()
+- notification(Notification), hideDefaultNotification(), viewNotificationOnFinish() - work only when you set makeImmortal()
+- to set the events (onStart, onError, etc.), you must set DownloadReceiver
+- if you set the receivedFileSource event, the data will go into this method WITHOUT CONSERVATION on the device
 ```
 
 
-## Интеграция
-Добавьте в корневой build.gradle следующий репозиторий:
+## Integration
+Add it in your root build.gradle at the end of repositories:
 ```groovy
 allprojects {
     repositories {
@@ -78,7 +79,7 @@ allprojects {
 }
 ```
 
-Добавьте в build.gradle вашего модуля следующую зависимость:
+Add the following dependency to your module's build.gradle:
 ```groovy
 dependencies {
     compile 'com.github.ArmanSar:fileloader:0.1.1'
