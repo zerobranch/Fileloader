@@ -1,16 +1,16 @@
-package ru.agima.mobile.loader.core;
+package com.sarproj.mobile.loader.core;
 
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
-import java.util.ArrayList;
+import com.sarproj.mobile.loader.core.Loader.Configurator;
+import com.sarproj.mobile.loader.service.LoaderService;
+import com.sarproj.mobile.loader.utils.BundleConst;
+import com.sarproj.mobile.loader.utils.Logger;
+import com.sarproj.mobile.loader.utils.Validator;
 
-import ru.agima.mobile.loader.core.Loader.Configurator;
-import ru.agima.mobile.loader.service.LoaderService;
-import ru.agima.mobile.loader.utils.BundleConst;
-import ru.agima.mobile.loader.utils.Logger;
-import ru.agima.mobile.loader.utils.Validator;
+import java.util.ArrayList;
 
 final class Core {
     private Context context;

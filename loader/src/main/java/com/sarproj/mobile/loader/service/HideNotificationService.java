@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.service;
+package com.sarproj.mobile.loader.service;
 
 import android.app.Notification;
 import android.app.Service;

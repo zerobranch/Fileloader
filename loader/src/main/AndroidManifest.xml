@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.agima.mobile.loader">
+    package="com.sarproj.mobile.loader">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -10,11 +10,11 @@
         android:label="@string/app_name"
         android:supportsRtl="true">
         <service
-            android:name=".service.LoaderService"
+            android:name="com.sarproj.mobile.loader.service.LoaderService"
             android:exported="false" />
 
         <service
-            android:name=".service.HideNotificationService"
+            android:name="com.sarproj.mobile.loader.service.HideNotificationService"
             android:exported="false" />
     </application>
 </manifest>

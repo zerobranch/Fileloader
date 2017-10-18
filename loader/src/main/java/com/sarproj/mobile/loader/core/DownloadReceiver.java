@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.core;
+package com.sarproj.mobile.loader.core;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -6,13 +6,13 @@ import android.os.ResultReceiver;
 
 import java.io.File;
 
-import ru.agima.mobile.loader.callbacks.lifecycle.OnCompleted;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnError;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnProgress;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnStart;
-import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
-import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
-import ru.agima.mobile.loader.utils.BundleConst;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnCompleted;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnError;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnProgress;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnStart;
+import com.sarproj.mobile.loader.callbacks.receiving.ReceivedFile;
+import com.sarproj.mobile.loader.callbacks.receiving.ReceivedFileSource;
+import com.sarproj.mobile.loader.utils.BundleConst;
 
 final class DownloadReceiver extends ResultReceiver {
     private ReceivedFile receivedFile;

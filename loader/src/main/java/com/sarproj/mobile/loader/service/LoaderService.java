@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.service;
+package com.sarproj.mobile.loader.service;
 
 import android.app.Notification;
 import android.app.Service;
@@ -12,8 +12,8 @@ import android.os.ResultReceiver;
 
 import java.util.ArrayList;
 
-import ru.agima.mobile.loader.core.LoadManager;
-import ru.agima.mobile.loader.utils.BundleConst;
+import com.sarproj.mobile.loader.core.LoadManager;
+import com.sarproj.mobile.loader.utils.BundleConst;
 
 public class LoaderService extends Service {
     private volatile Looper serviceLooper;

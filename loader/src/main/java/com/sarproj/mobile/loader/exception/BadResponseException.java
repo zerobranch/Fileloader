@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.exception;
+package com.sarproj.mobile.loader.exception;
 
 import java.io.IOException;
 

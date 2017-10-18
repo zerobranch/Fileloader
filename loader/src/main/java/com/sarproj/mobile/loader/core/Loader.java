@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.core;
+package com.sarproj.mobile.loader.core;
 
 import android.app.Notification;
 import android.content.Context;
@@ -7,13 +7,13 @@ import android.os.Handler;
 import java.io.File;
 import java.util.ArrayList;
 
-import ru.agima.mobile.loader.callbacks.lifecycle.OnCompleted;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnError;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnProgress;
-import ru.agima.mobile.loader.callbacks.lifecycle.OnStart;
-import ru.agima.mobile.loader.callbacks.receiving.ReceivedFile;
-import ru.agima.mobile.loader.callbacks.receiving.ReceivedFileSource;
-import ru.agima.mobile.loader.utils.Validator;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnCompleted;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnError;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnProgress;
+import com.sarproj.mobile.loader.callbacks.lifecycle.OnStart;
+import com.sarproj.mobile.loader.callbacks.receiving.ReceivedFile;
+import com.sarproj.mobile.loader.callbacks.receiving.ReceivedFileSource;
+import com.sarproj.mobile.loader.utils.Validator;
 
 public final class Loader {
     private final String DEFAULT_PATH;

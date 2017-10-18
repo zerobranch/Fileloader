@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.callbacks.receiving;
+package com.sarproj.mobile.loader.callbacks.receiving;
 
 import java.io.File;
 

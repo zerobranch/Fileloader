@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.utils;
+package com.sarproj.mobile.loader.utils;
 
 public interface BundleConst {
     String URL = "url";

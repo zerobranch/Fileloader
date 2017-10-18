@@ -1,4 +1,4 @@
-package ru.agima.mobile.loader.core;
+package com.sarproj.mobile.loader.core;
 
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -17,11 +17,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import ru.agima.mobile.loader.core.DownloadReceiver.ReceiveCode;
-import ru.agima.mobile.loader.exception.BadResponseException;
-import ru.agima.mobile.loader.exception.FileIsExistException;
-import ru.agima.mobile.loader.utils.BundleConst;
-import ru.agima.mobile.loader.utils.Logger;
+import com.sarproj.mobile.loader.core.DownloadReceiver.ReceiveCode;
+import com.sarproj.mobile.loader.exception.BadResponseException;
+import com.sarproj.mobile.loader.exception.FileIsExistException;
+import com.sarproj.mobile.loader.utils.BundleConst;
+import com.sarproj.mobile.loader.utils.Logger;
 
 public class LoadManager {
     private ResultReceiver receiver;
