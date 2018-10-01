@@ -4,6 +4,11 @@
 
 Library for managing file downloads on the Android platform
 
+##### Choose language
+[English](https://github.com/ArmanSar/Fileloader/blob/master/README.md) 
+
+[Русский](https://github.com/ArmanSar/Fileloader/blob/master/RUSSIAN_README.md)
+
 ## Descripton
 File Loader - is a library for the android platform. It allows you to download any files without much effort and get the result in the thread you specified.
 
