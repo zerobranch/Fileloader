@@ -4,6 +4,11 @@
 
 Библиотека для управления загрузками файлов на платформе Android
 
+##### Выберите язык
+[English](https://github.com/ArmanSar/Fileloader/blob/master/README.md) 
+
+[Русский](https://github.com/ArmanSar/Fileloader/blob/master/RUSSIAN_README.md)
+
 ## Описание
 File Loader - это библиотека для платформы android. Она позволяет скачивать любые файлы без особых услилий и получать результат в указанном вами потоке. 
 
