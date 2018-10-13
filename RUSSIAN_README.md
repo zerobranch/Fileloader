@@ -1,6 +1,6 @@
 # File Loader
 [![Jitpack ](https://img.shields.io/jitpack/v/jitpack/maven-simple.svg)](https://jitpack.io/)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ArmanSar/fileloader/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ArmanSar/fileloader/blob/master/LICENSE) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Fileloader-green.svg?style=flat)](https://android-arsenal.com/details/1/7216)
 
 Библиотека для управления загрузками файлов на платформе Android
 
