@@ -1,5 +1,5 @@
 # File Loader
-[![Jitpack ](https://img.shields.io/jitpack/v/jitpack/maven-simple.svg)](https://jitpack.io/)
+[![](https://jitpack.io/v/ArmanSar/Fileloader.svg)](https://jitpack.io/#ArmanSar/Fileloader)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ArmanSar/fileloader/blob/master/LICENSE) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Fileloader-green.svg?style=flat)](https://android-arsenal.com/details/1/7216)
 
 Library for managing file downloads on the Android platform
