@@ -86,7 +86,7 @@ allprojects {
 Добавьте в build.gradle вашего модуля следующую зависимость:
 ```groovy
 dependencies {
-    compile 'com.github.ArmanSar:fileloader:0.1.2'
+    implementation 'com.github.arman-sar:Fileloader:0.1.2'
 }
 ```
 
