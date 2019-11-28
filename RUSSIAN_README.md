@@ -1,13 +1,13 @@
 # File Loader
-[![](https://jitpack.io/v/ArmanSar/Fileloader.svg)](https://jitpack.io/#ArmanSar/Fileloader)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/ArmanSar/fileloader/blob/master/LICENSE) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Fileloader-green.svg?style=flat)](https://android-arsenal.com/details/1/7216)
+[![](https://jitpack.io/v/zerobranch/Fileloader.svg)](https://jitpack.io/#zerobranch/Fileloader)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/zerobranch/Fileloader/blob/master/LICENSE) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Fileloader-green.svg?style=flat)](https://android-arsenal.com/details/1/7216)
 
 Библиотека для управления загрузками файлов на платформе Android
 
 ##### Выберите язык
-[English](https://github.com/ArmanSar/Fileloader/blob/master/README.md) 
+[English](https://github.com/zerobranch/Fileloader/blob/master/README.md) 
 
-[Русский](https://github.com/ArmanSar/Fileloader/blob/master/RUSSIAN_README.md)
+[Русский](https://github.com/zerobranch/Fileloader/blob/master/RUSSIAN_README.md)
 
 ## Описание
 File Loader - это библиотека для платформы android. Она позволяет скачивать любые файлы без особых услилий и получать результат в указанном вами потоке. 
@@ -86,7 +86,7 @@ allprojects {
 Добавьте в build.gradle вашего модуля следующую зависимость:
 ```groovy
 dependencies {
-    implementation 'com.github.arman-sar:Fileloader:0.1.2'
+    implementation 'com.github.zerobranch:Fileloader:1.0.0'
 }
 ```
 
@@ -95,7 +95,7 @@ dependencies {
 ```
 The MIT License (MIT)
 
-Copyright (c) 2017 Arman
+Copyright (c) 2017 zerobranch
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
