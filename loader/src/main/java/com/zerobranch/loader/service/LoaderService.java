@@ -1,4 +1,4 @@
-package com.sarproj.mobile.loader.service;
+package com.zerobranch.loader.service;
 
 import android.app.Notification;
 import android.app.Service;
@@ -12,8 +12,8 @@ import android.os.ResultReceiver;
 
 import java.util.ArrayList;
 
-import com.sarproj.mobile.loader.core.LoadManager;
-import com.sarproj.mobile.loader.utils.BundleConst;
+import com.zerobranch.loader.core.LoadManager;
+import com.zerobranch.loader.utils.BundleConst;
 
 public class LoaderService extends Service {
     private volatile Looper serviceLooper;

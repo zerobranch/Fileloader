@@ -1,14 +1,14 @@
-package com.sarproj.mobile.loader.core;
+package com.zerobranch.loader.core;
 
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
-import com.sarproj.mobile.loader.core.Loader.Configurator;
-import com.sarproj.mobile.loader.service.LoaderService;
-import com.sarproj.mobile.loader.utils.BundleConst;
-import com.sarproj.mobile.loader.utils.Logger;
-import com.sarproj.mobile.loader.utils.Validator;
+import com.zerobranch.loader.core.Loader.Configurator;
+import com.zerobranch.loader.service.LoaderService;
+import com.zerobranch.loader.utils.BundleConst;
+import com.zerobranch.loader.utils.Logger;
+import com.zerobranch.loader.utils.Validator;
 
 import java.util.ArrayList;
 

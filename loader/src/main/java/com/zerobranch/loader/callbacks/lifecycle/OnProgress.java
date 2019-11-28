@@ -1,4 +1,4 @@
-package com.sarproj.mobile.loader.callbacks.lifecycle;
+package com.zerobranch.loader.callbacks.lifecycle;
 
 public interface OnProgress {
     void apply(int progress);

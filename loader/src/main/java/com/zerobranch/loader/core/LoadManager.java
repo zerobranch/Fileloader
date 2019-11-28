@@ -1,4 +1,4 @@
-package com.sarproj.mobile.loader.core;
+package com.zerobranch.loader.core;
 
 import android.os.Bundle;
 import android.os.ResultReceiver;
@@ -17,11 +17,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
-import com.sarproj.mobile.loader.core.DownloadReceiver.ReceiveCode;
-import com.sarproj.mobile.loader.exception.BadResponseException;
-import com.sarproj.mobile.loader.exception.FileIsExistException;
-import com.sarproj.mobile.loader.utils.BundleConst;
-import com.sarproj.mobile.loader.utils.Logger;
+import com.zerobranch.loader.core.DownloadReceiver.ReceiveCode;
+import com.zerobranch.loader.exception.BadResponseException;
+import com.zerobranch.loader.exception.FileIsExistException;
+import com.zerobranch.loader.utils.BundleConst;
+import com.zerobranch.loader.utils.Logger;
 
 public class LoadManager {
     private ResultReceiver receiver;
@@ -113,7 +113,7 @@ public class LoadManager {
             }
             final int fileLength = connection.getContentLength();
             input = new BufferedInputStream(connection.getInputStream());
-            final byte data[] = new byte[1024];
+            final byte[] data = new byte[1024];
             long total = 0;
             int count;
             int progress;

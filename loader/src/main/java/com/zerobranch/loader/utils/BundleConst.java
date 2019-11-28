@@ -1,4 +1,4 @@
-package com.sarproj.mobile.loader.utils;
+package com.zerobranch.loader.utils;
 
 public interface BundleConst {
     String URL = "url";
